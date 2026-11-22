@@ -346,6 +346,19 @@
 
     var docLabel = "E-Phyto #" + CERT.DocNo;
 
+    /* Consignee lines: skip empty entries so the *** line sits directly under the address */
+    var consigneeLines = [
+      CERT.ConsigneeName,
+      CERT.ConsigneeAddress,
+      CERT.ConsigneeAddress2,
+      CERT.ConsigneeAddress3,
+      CERT.ConsigneeAddress4,
+      CERT.ConsigneeAddress5,
+      CERT.ConsigneeAddress6,
+      CERT.ConsigneeAddress7
+    ].filter(function (v) { return v != null && String(v).trim() !== ""; });
+    var consigneeHtml = consigneeLines.map(escapeHtml).join(" <br>");
+
     return "<!doctype html><html><head><meta charset='utf-8'>" +
       "<base href='" + base + "'>" +
       "<title>" + escapeHtml(docLabel) + " - " + escapeHtml(sn) + "</title>" +
@@ -413,14 +426,7 @@
           escapeHtml(CERT.ExporterAddress) + " <br>" +
           escapeHtml(CERT.ExporterTel) + " <br>" +
           "*****************************************</div>" +
-        "<div class='part' id='p2'>" + escapeHtml(CERT.ConsigneeName) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress2) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress3) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress4) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress5) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress6) + " <br>" +
-          escapeHtml(CERT.ConsigneeAddress7) + "</div>" +
+        "<div class='part' id='p2'>" + consigneeHtml + "</div>" +
         "<div class='part' id='p3'>" + escapeHtml(CERT.CountryEnglishName) + "</div>" +
         "<div class='part' id='p4'>" + escapeHtml(CERT.SourceCountryEnglishName) + "</div>" +
         "<div class='part' id='p5'>" + escapeHtml(CERT.TConveyance11) + "</div>" +
