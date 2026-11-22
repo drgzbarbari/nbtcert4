@@ -1,0 +1,35 @@
+# GitLab Pages deploy — PPO E-Phyto #2
+# Published at: https://<namespace>.gitlab.io/<repo-2>/
+
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache coreutils
+  script:
+    - mkdir -p public
+    - cp index.html public/index.html
+    - cp logo.png    public/logo.png
+    - cp blur.png    public/blur.png
+    - cp bgcopy.png  public/bgcopy.png
+    - cp qrcode.png  public/qrcode.png
+
+    # fail fast if any asset is missing
+    - test -s public/index.html || (echo "missing index.html" && exit 1)
+    - test -s public/logo.png   || (echo "missing logo.png"   && exit 1)
+    - test -s public/blur.png   || (echo "missing blur.png"   && exit 1)
+    - test -s public/bgcopy.png || (echo "missing bgcopy.png" && exit 1)
+    - test -s public/qrcode.png || (echo "missing qrcode.png" && exit 1)
+
+    - ls -la public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  environment:
+    name: production
+    url: $CI_PAGES_URL
