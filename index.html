@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Phytosanitary Certificate Search</title>
@@ -326,43 +325,14 @@
     setTimeout(function () { el.value = iso; }, 50);
   }
 
+  /* ====== RENDER: background image only, nothing applied on top ====== */
   function certificateHtml(sn, poi, dMs) {
-    var CERT = CERTS[sn];
     var base = window.location.origin + window.location.pathname.replace(/[^/]*$/, "");
     var bgAbs = new URL("bgcopy.png", base).href;
-    var qrAbs = new URL("qrcode.png", base).href;
-
-    var EXP_ADDR_INDENT = "3px";
-
-    var col0 = "", col1 = "", col2 = "", col3 = "", col4 = "", col5 = "";
-    CERT.Products.forEach(function (p, i) {
-      col0 += "<span></span><br>";
-      col1 += "<span>" + escapeHtml(p.ProductEnglishName || "") + "</span><br>";
-      col2 += "<span>" + escapeHtml(p.ProductScientificName || "") + "</span><br>";
-      col3 += "<span>" + escapeHtml((p.NoOfPackages || "") + " " + (p.TypeOfPackagesName || "")) + "</span><br>";
-      col4 += "<span>" + escapeHtml(p.T1 || "") + "</span><br>";
-      col5 += "<span>" + escapeHtml(p.T2Gross || "") + "</span>" +
-              "<span>" + escapeHtml(p.T2Net || "") + "</span>";
-    });
-
-    var docLabel = "E-Phyto #" + CERT.DocNo;
-
-    /* Consignee lines: skip empty entries so the *** line sits directly under the address */
-    var consigneeLines = [
-      CERT.ConsigneeName,
-      CERT.ConsigneeAddress,
-      CERT.ConsigneeAddress2,
-      CERT.ConsigneeAddress3,
-      CERT.ConsigneeAddress4,
-      CERT.ConsigneeAddress5,
-      CERT.ConsigneeAddress6,
-      CERT.ConsigneeAddress7
-    ].filter(function (v) { return v != null && String(v).trim() !== ""; });
-    var consigneeHtml = consigneeLines.map(escapeHtml).join(" <br>");
 
     return "<!doctype html><html><head><meta charset='utf-8'>" +
       "<base href='" + base + "'>" +
-      "<title>" + escapeHtml(docLabel) + " - " + escapeHtml(sn) + "</title>" +
+      "<title>E-Phyto - " + escapeHtml(sn) + "</title>" +
       "<style>" +
         "html,body{margin:0;padding:0;background:#2b2b2b;}" +
         ".toolbar{position:sticky;top:0;z-index:10;display:flex;gap:12px;align-items:center;" +
@@ -371,87 +341,19 @@
         ".toolbar h1{font-size:15px;margin:0 auto 0 0;font-weight:600;}" +
         ".toolbar button{padding:6px 12px;font-size:14px;border-radius:4px;cursor:pointer;" +
           "color:#fff;background:#5cb85c;border:1px solid #4cae4c;}" +
-
         ".stage{display:flex;justify-content:center;padding:30px;}" +
-
-        "#print-container{height:29.7cm;width:21cm;font-family:tahoma,sans-serif;font-size:10px;" +
-          "position:relative;" +
-          "background-image:url('" + bgAbs + "');" +
-          "background-size:100% 100%;background-position:center center;" +
-          "background-repeat:no-repeat;background-color:#fff;" +
-          "box-shadow:0 0 12px rgba(0,0,0,.6);}" +
-
-        ".part{position:absolute;color:#686868;font-weight:600;}" +
-        ".part>span{display:block;margin-bottom:7px;}" +
-        "#p0{top:2.5cm;left:12.5cm;width:8.5cm;text-indent:2cm;}" +
-        "#p1{top:5.0cm;left:1.8cm;width:8.5cm;" +
-          "text-indent:calc(2cm - " + EXP_ADDR_INDENT + ");}" +
-        "#p2{top:5.0cm;left:11.3cm;width:8.3cm;text-indent:2.8cm;}" +
-        "#p3{top:8cm;left:1.5cm;width:8.5cm;text-indent:2.7cm;}" +
-        "#p4{top:8cm;left:11.3cm;width:8.3cm;text-indent:2.1cm;}" +
-        "#p5{top:9.35cm;left:1.5cm;width:8.5cm;text-indent:2.1cm;}" +
-        "#p6{top:9.35cm;left:11.3cm;width:8.3cm;text-indent:1.9cm;}" +
-        "#p7-0{top:11.55cm;left:1cm;width:0.5cm;}" +
-        "#p7-1{top:11.55cm;left:1.5cm;width:3cm;}" +
-        "#p7-2{top:11.55cm;left:5.8cm;width:3.3cm;}" +
-        "#p7-3{top:11.55cm;left:11cm;width:3.2cm;}" +
-        "#p7-4{top:11.55cm;left:15cm;width:2.5cm;}" +
-        "#p7-5{top:11.55cm;left:17.8cm;width:2.4cm;}" +
-        "#p9{top:18.7cm;left:1.5cm;width:18cm;text-indent:1.7cm;}" +
-        "#p10{top:21.9cm;left:1.5cm;width:9.3cm;text-indent:1.5cm;}" +
-        "#p11{top:22.9cm;left:1.5cm;width:4.8cm;text-indent:2.5cm;}" +
-        "#p12{top:22.9cm;left:8cm;width:3.7cm;text-indent:1cm;}" +
-        "#p13{top:24.55cm;left:1.5cm;width:4.8cm;text-indent:.8cm;}" +
-        "#p14{top:24.58cm;left:8cm;width:3.7cm;text-indent:.5cm;}" +
-        "#p15{top:25.8cm;left:2cm;width:9cm;text-indent:1.6cm;}" +
-        "#p16-1{top:20.9cm;left:14cm;width:6.5cm;}" +
-        "#p16-2{top:21.9cm;left:14cm;width:6.5cm;}" +
-        "#p16-3{top:22.9cm;left:14cm;width:6.5cm;}" +
-        "#p16-4{top:24.5cm;left:13cm;width:7.5cm;}" +
-        "#p16-5{top:26.5cm;left:13cm;width:6.5cm;}" +
-
-        "#qrcode-image{position:absolute;width:2cm;height:2cm;top:2cm;left:17.85cm;}" +
-
+        "#print-container{height:29.7cm;width:21cm;position:relative;" +
+          "background-color:#fff;box-shadow:0 0 12px rgba(0,0,0,.6);}" +
+        "#bg-image{display:block;width:100%;height:100%;object-fit:contain;}" +
         "@page{size:A4 portrait;margin:0;}" +
         "@media print{body{background:#fff;}.toolbar,.stage{display:none!important;}" +
           "#print-container{box-shadow:none;margin:0;}}" +
       "</style></head><body>" +
-      "<div class='toolbar'><h1>" + escapeHtml(docLabel) + " - " + escapeHtml(sn) + "</h1>" +
+      "<div class='toolbar'><h1>E-Phyto - " + escapeHtml(sn) + "</h1>" +
         "<button onclick='window.print()'>Print / Save as PDF</button></div>" +
       "<div class='stage'><div id='print-container'>" +
-        "<img id='qrcode-image' alt='' src='" + qrAbs + "' " +
+        "<img id='bg-image' alt='' src='" + bgAbs + "' " +
           "onerror=\"this.style.display='none'\">" +
-        "<div class='part' id='p0'>" + escapeHtml(CERT.SerialNo) + "</div>" +
-        "<div class='part' id='p1'>" + escapeHtml(CERT.ExporterName) + " <br>" +
-          escapeHtml(CERT.ExporterPostalCode) + " <br>" +
-          escapeHtml(CERT.ExporterAddress) + " <br>" +
-          escapeHtml(CERT.ExporterTel) + " <br>" +
-          "*****************************************</div>" +
-        "<div class='part' id='p2'>" + consigneeHtml + "</div>" +
-        "<div class='part' id='p3'>" + escapeHtml(CERT.CountryEnglishName) + "</div>" +
-        "<div class='part' id='p4'>" + escapeHtml(CERT.SourceCountryEnglishName) + "</div>" +
-        "<div class='part' id='p5'>" + escapeHtml(CERT.TConveyance11) + "</div>" +
-        "<div class='part' id='p6'>" + escapeHtml(CERT.EntryPoint) + "</div>" +
-        "<div>" +
-          "<div class='part' id='p7-0'>" + col0 + "</div>" +
-          "<div class='part' id='p7-1'>" + col1 + "</div>" +
-          "<div class='part' id='p7-2'>" + col2 + "</div>" +
-          "<div class='part' id='p7-3'>" + col3 + "</div>" +
-          "<div class='part' id='p7-4'>" + col4 + "</div>" +
-          "<div class='part' id='p7-5'>" + col5 + "</div>" +
-        "</div>" +
-        "<div class='part' id='p9'> </div>" +
-        "<div class='part' id='p10'></div>" +
-        "<div class='part' id='p11'></div>" +
-        "<div class='part' id='p12'></div>" +
-        "<div class='part' id='p13'></div>" +
-        "<div class='part' id='p14'></div>" +
-        "<div class='part' id='p15'></div>" +
-        "<div class='part' id='p16-1'>" + escapeHtml(CERT.EnglishProvinceName) + "</div>" +
-        "<div class='part' id='p16-2'>" + escapeHtml(CERT.IssueNo) + "</div>" +
-        "<div class='part' id='p16-3'>" + escapeHtml(CERT.ConfirmDateString) + "</div>" +
-        "<div class='part' id='p16-4'>" + escapeHtml(CERT.ConfirmerEnglishName + " " + CERT.ConfirmerUserCode) + "</div>" +
-        "<div class='part' id='p16-5'></div>" +
       "</div></div></body></html>";
   }
 
