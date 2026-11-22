@@ -14,7 +14,7 @@ pages:
     - cp index.html public/index.html
     - cp logo.png    public/logo.png
     - cp blur.png    public/blur.png
-    - cp bgcopy.png  public/bgcopy.png
+    # - cp bgcopy.png  public/bgcopy.png
     - cp qrcode.png  public/qrcode.png
 
     # fail fast if any asset is missing
